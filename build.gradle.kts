@@ -1,13 +1,12 @@
 plugins {
-// Uncomment if you are using IntelliJ.
-//  idea
-    java
+    idea
+    kotlin("jvm") version "2.3.0"
     id("com.azuredoom.hytale-tools") version "1.+"
 }
 
 
 tasks.withType<Javadoc>().configureEach {
-    (options as org.gradle.external.javadoc.StandardJavadocDocletOptions).addStringOption("Xdoclint:-missing", "-quiet")
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:-missing", "-quiet")
 }
 
 group = project.property("group").toString()
@@ -39,6 +38,12 @@ hytaleTools {
 
 repositories {
     mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation("fun.hygames.kotlinutils:HytaleKotlinUtils:dev")
+    implementation("org.ode4j:core:0.5.4")
 }
 
 tasks.named<Jar>("jar") {
@@ -46,10 +51,9 @@ tasks.named<Jar>("jar") {
     archiveVersion.set(project.property("version").toString())
 }
 
-// Uncomment if you are using IntelliJ.
-// idea {
-//     module {
-//         isDownloadSources = true
-//         isDownloadJavadoc = true
-//     }
-// }
+ idea {
+     module {
+         isDownloadSources = true
+         isDownloadJavadoc = true
+     }
+ }

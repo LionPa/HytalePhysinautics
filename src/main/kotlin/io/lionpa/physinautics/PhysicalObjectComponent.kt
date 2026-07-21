@@ -1,0 +1,31 @@
+package io.lionpa.physinautics
+
+import com.hypixel.hytale.codec.builder.BuilderCodec
+import com.hypixel.hytale.component.Component
+import com.hypixel.hytale.component.ComponentType
+import com.hypixel.hytale.server.core.entity.Frozen
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore
+import java.util.function.Supplier
+
+class PhysicalObjectComponent: Component<EntityStore> {
+
+    var physicsBody: io.lionpa.physinautics.api.IPhysicsBody? = null
+    var mass: Float = 1.0f
+    var kinematic: Boolean = false
+
+    companion object {
+        fun getComponentType(): ComponentType<EntityStore, PhysicalObjectComponent> {
+            return Physinautics.get().physicalObjectComponentType
+        }
+
+        val CODEC = BuilderCodec.builder(PhysicalObjectComponent::class.java, ::PhysicalObjectComponent).build()
+    }
+
+    override fun clone(): PhysicalObjectComponent {
+        val cloned = PhysicalObjectComponent()
+        cloned.mass = this.mass
+        cloned.kinematic = this.kinematic
+        // We do not clone the physics body, it should be re-created by the system
+        return cloned
+    }
+}
