@@ -49,7 +49,6 @@ repositories {
 
 dependencies {
     implementation("fun.hygames.kotlinutils:HytaleKotlinUtils:dev")
-    implementation("org.ode4j:core:0.5.4")
     implementation("com.github.LionPa:kotlin-ffm:main-SNAPSHOT")
 }
 
@@ -62,6 +61,9 @@ cargo {
 tasks.named<Jar>("jar") {
     archiveBaseName.set(project.property("mod_name").toString())
     archiveVersion.set(project.property("version").toString())
+    
+    // Включаем kotlin-ffm прямо в итоговый jar
+    from(configurations.runtimeClasspath.get().filter { it.name.contains("kotlin-ffm") }.map { zipTree(it) })
 }
 
  idea {

@@ -49,12 +49,40 @@ class PhysicsWorld {
             long,
             int
         )
+
+        private val has_chunk = Rust.method(
+            "has_chunk",
+            bool,
+            long,
+            int,
+            int,
+            int
+        )
+
+        private val set_chunk = Rust.void(
+            "set_chunk",
+            long,
+            int,
+            int,
+            int,
+            long
+        )
+
+        private val remove_chunk = Rust.void(
+            "remove_chunk",
+            long,
+            int,
+            int,
+            int
+        )
     }
 
     val arena = Arena.ofConfined()
     var worldPtr: Long = 0
     var syncBuffer: MemorySegment? = null
     val maxObjects = 10000
+
+    val chunks = HashMap<Triple<Int, Int, Int>, PhysicalChunk>()
 
     fun init() {
         syncBuffer = arena.allocate(maxObjects * 7L * 4L)
@@ -90,5 +118,25 @@ class PhysicsWorld {
 
     fun removeBody(id: Int) {
         rapier_remove_body.invokeExact(worldPtr, id)
+    }
+
+    fun hasChunk(chunkX: Int, chunkY: Int, chunkZ: Int): Boolean {
+        return has_chunk.invokeExact(worldPtr, chunkX, chunkY, chunkZ) as Boolean
+    }
+
+    fun setChunk(chunk: PhysicalChunk) {
+        val triple = Triple(chunk.x, chunk.y, chunk.z)
+
+        if (chunks[triple] != chunk) {
+            chunks.remove(triple)?.remove()
+        }
+        
+        chunks[triple] = chunk
+        set_chunk.invokeExact(worldPtr, chunk.x, chunk.y, chunk.z, chunk.blocks.address())
+    }
+
+    fun removeChunk(x: Int, y: Int, z: Int) {
+        chunks.remove(Triple(x, y, z))?.remove()
+        remove_chunk.invokeExact(worldPtr, x, y, z)
     }
 }

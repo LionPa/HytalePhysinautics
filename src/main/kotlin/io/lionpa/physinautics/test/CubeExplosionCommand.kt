@@ -51,9 +51,9 @@ class CubeExplosionCommand : AbstractPlayerCommand("cube_explode", "Spawns an ex
         val startY = pos.y + 5.0
         val startZ = pos.z
 
-        for (x in 0 until 4) {
-            for (y in 0 until 4) {
-                for (z in 0 until 4) {
+        for (x in 0 until 10) {
+            for (y in 0 until 10) {
+                for (z in 0 until 10) {
                     val holder = EntityStore.REGISTRY.newHolder()
 
                     val blockPos = Vector3d(
@@ -91,19 +91,19 @@ class CubeExplosionCommand : AbstractPlayerCommand("cube_explode", "Spawns an ex
                 val body = physObj.physicsBody ?: continue
 
                 // Calculate explosion force direction from the center of the cube
-                val centerOffsetX = (index / 16) - 2.0
-                val centerOffsetY = ((index / 4) % 4) - 2.0
-                val centerOffsetZ = (index % 4) - 2.0
+                val centerOffsetX = (index / 100) - 2.0
+                val centerOffsetY = ((index / 10) % 10) - 2.0
+                val centerOffsetZ = (index % 10) - 2.0
 
                 // Normalize and scale force
                 val length = Math.sqrt(centerOffsetX * centerOffsetX + centerOffsetY * centerOffsetY + centerOffsetZ * centerOffsetZ)
                 if (length > 0.0) {
                     val forceScale = 3.0 / length // Super weak explosion force magnitude
-                    body.applyForce(
-                        centerOffsetX * forceScale,
-                        centerOffsetY * forceScale + 2.0, // tiny upward boost
-                        centerOffsetZ * forceScale
-                    )
+                   // body.applyForce(
+                   //     centerOffsetX * forceScale,
+                   //     centerOffsetY * forceScale + 2.0, // tiny upward boost
+                   //     centerOffsetZ * forceScale
+                   // )
                 }
             }
         }, 100, TimeUnit.MILLISECONDS)

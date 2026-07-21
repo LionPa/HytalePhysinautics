@@ -8,6 +8,7 @@ import com.hypixel.hytale.server.core.command.system.CommandContext
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand
 import com.hypixel.hytale.server.core.entity.entities.BlockEntity
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox
+import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent
 import com.hypixel.hytale.server.core.modules.entity.component.PropComponent
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent
 import com.hypixel.hytale.server.core.modules.entity.hitboxcollision.HitboxCollision
@@ -50,7 +51,7 @@ object TestHardCollisions {
             val store = world.entityStore.store
 
             val holder = EntityStore.REGISTRY.newHolder()
-
+            
             holder[TRANSFORM] = TransformComponent(pos, vec3(0,0,0).toRotation())
             holder[BLOCK_ENTITY] = BlockEntity("Soil_Grass_Full")
             holder[BOUNDING_BOX] = BoundingBox(Box.UNIT)

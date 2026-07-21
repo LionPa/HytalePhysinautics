@@ -45,7 +45,7 @@ class Physinautics(init: JavaPluginInit): JavaPlugin(init) {
         entityStoreRegistry.registerSystem(PhysicsStepSystem)
         entityStoreRegistry.registerSystem(PhysicsSystem)
         entityStoreRegistry.registerSystem(BreakPhysicsEntitySystem)
-        chunkStoreRegistry.registerSystem(PhysicsBlockColliderSystem)
+        entityStoreRegistry.registerSystem(PhysicsBlockColliderSystem)
         CodeInitializer.addPlugin(this)
     }
 }
