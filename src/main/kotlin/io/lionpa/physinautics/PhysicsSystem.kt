@@ -13,6 +13,8 @@ import `fun`.hygames.kotlinutils.TRANSFORM
 import `fun`.hygames.kotlinutils.codeInitialization.Register
 import `fun`.hygames.kotlinutils.get
 import io.lionpa.physinautics.Physinautics.Companion.PHYSICAL_OBJECT
+import org.joml.Quaternionf
+import org.joml.Vector3f
 
 object PhysicsSystem: EntityTickingSystem<EntityStore>() {
     override fun tick(
@@ -22,7 +24,6 @@ object PhysicsSystem: EntityTickingSystem<EntityStore>() {
         store: Store<EntityStore?>,
         buffer: CommandBuffer<EntityStore?>
     ) {
-
         val transform = chunk[id, TRANSFORM]!!
         val physObj = chunk[id, PHYSICAL_OBJECT]!!
 
@@ -41,18 +42,13 @@ object PhysicsSystem: EntityTickingSystem<EntityStore>() {
         val body = physObj.physicsBody!!
 
         transform.position.set(body.getPositionX(), body.getPositionY(), body.getPositionZ())
-        // Hytale использует порядок Y-X-Z (Yaw, Pitch, Roll) для углов Эйлера, 
-        // и хранит их в радианах. Переведем кватернион с помощью встроенной библиотеки JOML.
-        val q = org.joml.Quaternionf(
-            body.getRotationX(), 
-            body.getRotationY(), 
-            body.getRotationZ(), 
+        val q = Quaternionf(
+            body.getRotationX(),
+            body.getRotationY(),
+            body.getRotationZ(),
             body.getRotationW()
         )
-        val euler = q.getEulerAnglesYXZ(org.joml.Vector3f())
-        
-        // В Hytale Rotation3f: x = Pitch, y = Yaw, z = Roll
-        // JOML getEulerAnglesYXZ возвращает: x = Pitch, y = Yaw, z = Roll
+        val euler = q.getEulerAnglesYXZ(Vector3f())
         transform.rotation.set(euler.x, euler.y, euler.z)
     }
 

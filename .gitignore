@@ -11,7 +11,4 @@ run/
 .settings/
 .vscode
 /rust/target/
-/rust/zig-linker-aarch64-linux.bat
-/rust/zig-linker-x64-linux.bat
-/rust/zig-linker-x64-macos.bat
-/rust/zig-linker-aarch64-macos.bat
+/src/main/resources/natives/
