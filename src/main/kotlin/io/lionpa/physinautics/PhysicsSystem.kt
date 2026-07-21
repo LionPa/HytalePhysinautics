@@ -30,31 +30,20 @@ object PhysicsSystem: EntityTickingSystem<EntityStore>() {
 
         val boundingBox = storeChunk[id, BOUNDING_BOX]
         val sizeX = boundingBox?.boundingBox?.width() ?: 1.0
-        val sizeY = boundingBox?.boundingBox?.height() ?: 1.0
-        val sizeZ = boundingBox?.boundingBox?.depth() ?: 1.0
 
         if (physObj.physicsBody == null) {
-            physObj.physicsBody = PhysicsWorld.engine.createRigidBody(
+            physObj.physicsBody = Physinautics.getWorld(store.externalData.world).createRigidBody(
                 transform.position.x,
                 transform.position.y,
                 transform.position.z,
-                sizeX, sizeY, sizeZ,
-                physObj.mass,
-                physObj.kinematic
+                sizeX
             )
         }
 
         val body = physObj.physicsBody!!
 
-        if (physObj.kinematic) {
-            // If kinematic, Hytale controls the position, update the physics engine
-            body.setPosition(transform.position.x, transform.position.y, transform.position.z)
-            body.setRotationEuler(transform.rotation.x, transform.rotation.y, transform.rotation.z)
-        } else {
-            // If dynamic, Physics engine controls the position, update Hytale
-            transform.position.set(body.getPositionX(), body.getPositionY(), body.getPositionZ())
-            transform.rotation.set(body.getRotationEulerX(), body.getRotationEulerY(), body.getRotationEulerZ())
-        }
+        transform.position.set(body.getPositionX(), body.getPositionY(), body.getPositionZ())
+        transform.rotation.set(body.getRotationEulerX(), body.getRotationEulerY(), body.getRotationEulerZ())
     }
 
     override fun getQuery(): Query<EntityStore> {

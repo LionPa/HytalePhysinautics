@@ -1,6 +1,5 @@
 package io.lionpa.physinautics
 
-import com.hypixel.hytale.component.CommandBuffer
 import com.hypixel.hytale.component.Store
 import com.hypixel.hytale.component.system.tick.TickingSystem
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore
@@ -11,10 +10,6 @@ object PhysicsStepSystem : TickingSystem<EntityStore>() {
         index: Int,
         store: Store<EntityStore?>
     ) {
-        PhysicsWorldColliderSync.endSync()
-        
-        PhysicsWorld.step(dt)
-
-        PhysicsWorldColliderSync.beginSync()
+        Physinautics.getWorld(store.externalData.world).step(dt)
     }
 }

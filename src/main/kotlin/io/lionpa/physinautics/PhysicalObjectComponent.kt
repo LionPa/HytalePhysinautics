@@ -5,11 +5,12 @@ import com.hypixel.hytale.component.Component
 import com.hypixel.hytale.component.ComponentType
 import com.hypixel.hytale.server.core.entity.Frozen
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore
+import io.lionpa.physinautics.rust.RigidBody
 import java.util.function.Supplier
 
 class PhysicalObjectComponent: Component<EntityStore> {
 
-    var physicsBody: io.lionpa.physinautics.api.IPhysicsBody? = null
+    var physicsBody: RigidBody? = null
     var mass: Float = 1.0f
     var kinematic: Boolean = false
 

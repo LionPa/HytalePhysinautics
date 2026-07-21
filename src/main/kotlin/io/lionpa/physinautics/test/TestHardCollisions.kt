@@ -1,29 +1,26 @@
-package io.lionpa.physinautics
+package io.lionpa.physinautics.test
 
 import com.hypixel.hytale.component.AddReason
 import com.hypixel.hytale.component.Ref
 import com.hypixel.hytale.component.Store
 import com.hypixel.hytale.math.shape.Box
-import com.hypixel.hytale.server.core.asset.type.model.config.Model
-import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset
-import com.hypixel.hytale.server.core.command.commands.debug.component.hitboxcollision.HitboxCollisionAddCommand
 import com.hypixel.hytale.server.core.command.system.CommandContext
-import com.hypixel.hytale.server.core.command.system.basecommands.AbstractCommandCollection
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand
 import com.hypixel.hytale.server.core.entity.entities.BlockEntity
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox
-import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent
 import com.hypixel.hytale.server.core.modules.entity.component.PropComponent
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent
 import com.hypixel.hytale.server.core.modules.entity.hitboxcollision.HitboxCollision
 import com.hypixel.hytale.server.core.modules.entity.hitboxcollision.HitboxCollisionConfig
-import com.hypixel.hytale.server.core.modules.entity.system.ModelSystems
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId
 import com.hypixel.hytale.server.core.universe.PlayerRef
 import com.hypixel.hytale.server.core.universe.world.World
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore
 import `fun`.hygames.kotlinutils.*
 import `fun`.hygames.kotlinutils.codeInitialization.*
+import `fun`.hygames.kotlinutils.get
+import `fun`.hygames.kotlinutils.invoke
+import io.lionpa.physinautics.PhysicalObjectComponent
 import io.lionpa.physinautics.Physinautics.Companion.PHYSICAL_OBJECT
 
 class TestHardCollisionsCommand: AbstractPlayerCommand {

@@ -1,6 +1,11 @@
+import com.google.errorprone.annotations.Var
+
 plugins {
     idea
+
     kotlin("jvm") version "2.3.0"
+    id("dev.gobley.cargo") version "0.3.7"
+
     id("com.azuredoom.hytale-tools") version "1.+"
 }
 
@@ -39,11 +44,19 @@ hytaleTools {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
     implementation("fun.hygames.kotlinutils:HytaleKotlinUtils:dev")
     implementation("org.ode4j:core:0.5.4")
+    implementation("com.github.LionPa:kotlin-ffm:main-SNAPSHOT")
+}
+
+cargo {
+    packageDirectory = layout.projectDirectory.dir("rust")
+
+    jvmVariant = gobley.gradle.Variant.Release
 }
 
 tasks.named<Jar>("jar") {
@@ -57,3 +70,9 @@ tasks.named<Jar>("jar") {
          isDownloadJavadoc = true
      }
  }
+
+tasks.configureEach {
+    if (name.contains("WindowsArm64")) {
+        enabled = false
+    }
+}
