@@ -5,14 +5,12 @@ import com.hypixel.hytale.component.CommandBuffer
 import com.hypixel.hytale.component.Store
 import com.hypixel.hytale.component.query.Query
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem
-import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox
-import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore
 import `fun`.hygames.kotlinutils.BOUNDING_BOX
 import `fun`.hygames.kotlinutils.TRANSFORM
-import `fun`.hygames.kotlinutils.codeInitialization.Register
 import `fun`.hygames.kotlinutils.get
 import io.lionpa.physinautics.Physinautics.Companion.PHYSICAL_OBJECT
+import org.joml.Math
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
@@ -42,14 +40,17 @@ object PhysicsSystem: EntityTickingSystem<EntityStore>() {
         val body = physObj.physicsBody!!
 
         transform.position.set(body.getPositionX(), body.getPositionY(), body.getPositionZ())
-        val q = Quaternionf(
-            body.getRotationX(),
-            body.getRotationY(),
-            body.getRotationZ(),
-            body.getRotationW()
-        )
-        val euler = q.getEulerAnglesYXZ(Vector3f())
-        transform.rotation.set(euler.x, euler.y, euler.z)
+
+        val x = body.getRotationX()
+        val y = body.getRotationY()
+        val z =body.getRotationZ()
+        val w = body.getRotationW()
+
+        val xRot = Math.safeAsin(-2.0f * (y * z - w * x))
+        val yRot = Math.atan2(x * z + y * w, 0.5f - y * y - x * x)
+        val zRot = Math.atan2(y * x + w * z, 0.5f - x * x - z * z)
+
+        transform.rotation.set(xRot, yRot, zRot)
     }
 
     override fun getQuery(): Query<EntityStore> {

@@ -15,6 +15,10 @@ class Physinautics(init: JavaPluginInit): JavaPlugin(init) {
     companion object {
         private lateinit var instance: Physinautics
 
+        fun get(): Physinautics {
+            return instance
+        }
+        
         private val worlds = HashMap<World, PhysicsWorld>()
 
         fun getWorld(hytaleWorld: World): PhysicsWorld {
@@ -26,26 +30,26 @@ class Physinautics(init: JavaPluginInit): JavaPlugin(init) {
             return world
         }
 
-        fun get(): Physinautics {
-            return instance
-        }
-
+        lateinit var physicalObjectComponentType: ComponentType<EntityStore, PhysicalObjectComponent>
+        
+        // HKU (HytaleKotlinUtils) Component DSL
         val PHYSICAL_OBJECT
-            get() = instance.physicalObjectComponentType
+            get() = physicalObjectComponentType
     }
-
-    lateinit var physicalObjectComponentType: ComponentType<EntityStore, PhysicalObjectComponent>
 
     override fun setup() {
         instance = this
 
         physicalObjectComponentType = entityStoreRegistry.registerComponent(PhysicalObjectComponent::class.java, "PhysicalObject", PhysicalObjectComponent.CODEC)
-        commandRegistry.registerCommand(TestHardCollisionsCommand())
-        commandRegistry.registerCommand(CubeExplosionCommand())
+
         entityStoreRegistry.registerSystem(PhysicsStepSystem)
         entityStoreRegistry.registerSystem(PhysicsSystem)
         entityStoreRegistry.registerSystem(BreakPhysicsEntitySystem)
         entityStoreRegistry.registerSystem(PhysicsBlockColliderSystem)
+
+        commandRegistry.registerCommand(TestHardCollisionsCommand())
+        commandRegistry.registerCommand(CubeExplosionCommand())
+
         CodeInitializer.addPlugin(this)
     }
 }

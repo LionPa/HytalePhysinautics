@@ -8,7 +8,7 @@ object PhysicsStepSystem : TickingSystem<EntityStore>() {
     override fun tick(
         dt: Float,
         index: Int,
-        store: Store<EntityStore?>
+        store: Store<EntityStore>
     ) {
         Physinautics.getWorld(store.externalData.world).step(dt)
     }

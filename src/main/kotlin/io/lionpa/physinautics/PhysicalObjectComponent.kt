@@ -12,11 +12,10 @@ class PhysicalObjectComponent: Component<EntityStore> {
 
     var physicsBody: RigidBody? = null
     var mass: Float = 1.0f
-    var kinematic: Boolean = false
 
     companion object {
         fun getComponentType(): ComponentType<EntityStore, PhysicalObjectComponent> {
-            return Physinautics.get().physicalObjectComponentType
+            return Physinautics.physicalObjectComponentType
         }
 
         val CODEC = BuilderCodec.builder(PhysicalObjectComponent::class.java, ::PhysicalObjectComponent).build()
@@ -25,8 +24,6 @@ class PhysicalObjectComponent: Component<EntityStore> {
     override fun clone(): PhysicalObjectComponent {
         val cloned = PhysicalObjectComponent()
         cloned.mass = this.mass
-        cloned.kinematic = this.kinematic
-        // We do not clone the physics body, it should be re-created by the system
         return cloned
     }
 }

@@ -17,17 +17,13 @@ pub struct PhysicsWorld {
     pub impulse_joint_set: ImpulseJointSet,
     pub multibody_joint_set: MultibodyJointSet,
     pub ccd_solver: CCDSolver,
-    
-    // Маппинг наших внутренних ID (0, 1, 2...) на хэндлы Rapier
+
     pub handles: Vec<Option<RigidBodyHandle>>,
     pub free_ids: Vec<u32>,
-    
-    // Указатель на FFM буфер в Kotlin и макс. количество объектов
+
     pub sync_buffer: *mut f32,
     pub max_objects: usize,
-    
-    // Хранилище чанков (ID чанка -> Хэндл коллайдера)
-    // Храним Option, чтобы пустые чанки тоже отмечались как загруженные (None = пустой чанк)
+
     pub chunk_colliders: HashMap<(i32, i32, i32), Option<ColliderHandle>>,
 }
 
@@ -37,7 +33,7 @@ pub unsafe extern "C" fn rapier_init() -> *mut PhysicsWorld {
     let collider_set = ColliderSet::new();
 
     let world = Box::new(PhysicsWorld {
-        gravity: Vector::new(0.0, -9.81, 0.0), // Стандартная гравитация
+        gravity: Vector::new(0.0, -9.81, 0.0),
         integration_parameters: IntegrationParameters::default(),
         physics_pipeline: PhysicsPipeline::new(),
         island_manager: IslandManager::new(),
@@ -55,7 +51,6 @@ pub unsafe extern "C" fn rapier_init() -> *mut PhysicsWorld {
         chunk_colliders: HashMap::new(),
     });
 
-    // Передаем владение памятью (указателем) в Kotlin, Rust не удалит этот объект
     Box::into_raw(world)
 }
 
@@ -72,17 +67,15 @@ pub unsafe extern "C" fn rapier_add_box(world_ptr: *mut PhysicsWorld, x: f32, y:
     if world_ptr.is_null() { return 0; }
     let world = unsafe { &mut *world_ptr };
 
-    // Создаем динамическое тело
     let rigid_body = RigidBodyBuilder::dynamic()
         .translation(Vector::new(x, y, z))
         .build();
         
     let handle = world.rigid_body_set.insert(rigid_body);
-    
-    // В Rapier кубоид создается через half-extents (половинный размер)
+
     let half_extents = size / 2.0;
     let collider = ColliderBuilder::cuboid(half_extents, half_extents, half_extents)
-        .restitution(0.3) // Немного прыгучести
+        .restitution(0.3)
         .friction(0.5)
         .build();
         
@@ -96,8 +89,7 @@ pub unsafe extern "C" fn rapier_add_box(world_ptr: *mut PhysicsWorld, x: f32, y:
         world.handles.push(Some(handle));
         new_id
     };
-    
-    // Инициализируем буфер сразу, чтобы Kotlin не прочитал нули до первого шага симуляции
+
     if !world.sync_buffer.is_null() && (id as usize) < world.max_objects {
         let offset = (id as usize) * 7;
         let buffer = unsafe { std::slice::from_raw_parts_mut(world.sync_buffer, world.max_objects * 7) };
@@ -107,7 +99,7 @@ pub unsafe extern "C" fn rapier_add_box(world_ptr: *mut PhysicsWorld, x: f32, y:
         buffer[offset + 3] = 0.0;
         buffer[offset + 4] = 0.0;
         buffer[offset + 5] = 0.0;
-        buffer[offset + 6] = 1.0; // Quaternion W
+        buffer[offset + 6] = 1.0;
     }
     
     id
@@ -130,10 +122,8 @@ pub unsafe extern "C" fn rapier_step(world_ptr: *mut PhysicsWorld, dt: f32) {
     if world_ptr.is_null() { return; }
     let world = unsafe { &mut *world_ptr };
 
-    // Обновляем delta time (вдруг он меняется)
     world.integration_parameters.dt = dt;
 
-    // Делаем шаг симуляции
     world.physics_pipeline.step(
         world.gravity,
         &world.integration_parameters,
@@ -149,9 +139,7 @@ pub unsafe extern "C" fn rapier_step(world_ptr: *mut PhysicsWorld, dt: f32) {
         &(),
     );
 
-    // Массовая синхронизация напрямую в память Kotlin (Магия JNI/FFI)
     if !world.sync_buffer.is_null() && world.max_objects > 0 {
-        // Превращаем сырой указатель в мутабельный slice Rust
         let buffer = unsafe { std::slice::from_raw_parts_mut(world.sync_buffer, world.max_objects * 7) };
         
         for (i, opt_handle) in world.handles.iter().enumerate() {
@@ -162,12 +150,10 @@ pub unsafe extern "C" fn rapier_step(world_ptr: *mut PhysicsWorld, dt: f32) {
                     let rot = rb.rotation(); 
                     
                     let offset = i * 7;
-                    // Позиция
                     buffer[offset]     = pos.x;
                     buffer[offset + 1] = pos.y;
                     buffer[offset + 2] = pos.z;
-                    
-                    // Кватернион
+
                     buffer[offset + 3] = rot.x;
                     buffer[offset + 4] = rot.y;
                     buffer[offset + 5] = rot.z;
@@ -185,14 +171,13 @@ pub unsafe extern "C" fn rapier_remove_body(world_ptr: *mut PhysicsWorld, id: u3
 
     if let Some(opt_handle) = world.handles.get_mut(id as usize) {
         if let Some(handle) = opt_handle.take() {
-            // Удаляем тело и связанные с ним коллайдеры
             world.rigid_body_set.remove(
                 handle,
                 &mut world.island_manager,
                 &mut world.collider_set,
                 &mut world.impulse_joint_set,
                 &mut world.multibody_joint_set,
-                true, // Пробуждаем соседние тела при удалении
+                true,
             );
 
             if id as usize == world.handles.len() - 1 {
