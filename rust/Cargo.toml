@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-rapier3d = { version = "0.34.0", features = [ "simd-stable" ] }
+rapier3d = { version = "0.34.0", features = [ "simd-stable", "parallel" ] }
 
 [profile.release]
 opt-level = 3

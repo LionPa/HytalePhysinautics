@@ -21,6 +21,7 @@ import `fun`.hygames.kotlinutils.get
 import `fun`.hygames.kotlinutils.invoke
 import io.lionpa.physinautics.PhysicalObjectComponent
 import io.lionpa.physinautics.Physinautics.Companion.PHYSICAL_OBJECT
+import io.lionpa.physinautics.tnt.TntComponent
 
 class TestHardCollisionsCommand: AbstractPlayerCommand("collisiontest", "test command") {
 
@@ -41,6 +42,7 @@ class TestHardCollisionsCommand: AbstractPlayerCommand("collisiontest", "test co
             holder[TRANSFORM] = TransformComponent(pos, vec3(0,0,0).toRotation())
             holder[BLOCK_ENTITY] = BlockEntity("Soil_Grass_Full")
             holder[BOUNDING_BOX] = BoundingBox(Box.UNIT)
+            holder[TntComponent.getComponentType()] = TntComponent()
 
             holder[PHYSICAL_OBJECT] = PhysicalObjectComponent()
 

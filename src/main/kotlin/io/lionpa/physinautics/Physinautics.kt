@@ -11,6 +11,8 @@ import io.lionpa.physinautics.systems.PhysicsChunkUnloadSystem
 import io.lionpa.physinautics.systems.PhysicsEntityUnloadSystem
 import io.lionpa.physinautics.test.CubeExplosionCommand
 import io.lionpa.physinautics.test.TestHardCollisionsCommand
+import io.lionpa.physinautics.tnt.TntComponent
+import io.lionpa.physinautics.tnt.TntSystem
 
 class Physinautics(init: JavaPluginInit): JavaPlugin(init) {
 
@@ -37,18 +39,22 @@ class Physinautics(init: JavaPluginInit): JavaPlugin(init) {
         // HKU (HytaleKotlinUtils) Component DSL
         val PHYSICAL_OBJECT
             get() = physicalObjectComponentType
+
+        lateinit var tntComponentType: ComponentType<EntityStore, TntComponent>
     }
 
     override fun setup() {
         instance = this
 
         physicalObjectComponentType = entityStoreRegistry.registerComponent(PhysicalObjectComponent::class.java, "PhysicalObject", PhysicalObjectComponent.CODEC)
+        tntComponentType = entityStoreRegistry.registerComponent(TntComponent::class.java, "Tnt", TntComponent.CODEC)
 
         entityStoreRegistry.registerSystem(PhysicsStepSystem)
         entityStoreRegistry.registerSystem(PhysicsSystem)
         entityStoreRegistry.registerSystem(BreakPhysicsEntitySystem)
         entityStoreRegistry.registerSystem(PhysicsBlockColliderSystem)
         entityStoreRegistry.registerSystem(PhysicsEntityUnloadSystem)
+        entityStoreRegistry.registerSystem(TntSystem)
         chunkStoreRegistry.registerSystem(PhysicsChunkUnloadSystem)
 
         commandRegistry.registerCommand(TestHardCollisionsCommand())

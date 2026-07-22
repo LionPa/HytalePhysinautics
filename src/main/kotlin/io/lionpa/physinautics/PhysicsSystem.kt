@@ -43,7 +43,7 @@ object PhysicsSystem: EntityTickingSystem<EntityStore>() {
 
         val x = body.getRotationX()
         val y = body.getRotationY()
-        val z =body.getRotationZ()
+        val z = body.getRotationZ()
         val w = body.getRotationW()
 
         val xRot = Math.safeAsin(-2.0f * (y * z - w * x))
