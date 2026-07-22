@@ -75,6 +75,34 @@ class PhysicsWorld {
             int,
             int
         )
+
+        private val set_chunk_special = Rust.void(
+            "set_chunk_special",
+            long, // world_ptr
+            int,  // chunk_x
+            int,  // chunk_y
+            int,  // chunk_z
+            int,  // shape_id (u32 -> int)
+            int,  // material_type (u32 -> int)
+            int,  // instances_count (u32 -> int)
+            long  // instances_ptr
+        )
+
+        private val check_shapes_batch = Rust.void(
+            "check_shapes_batch",
+            long, // world_ptr
+            long, // shape_ids_ptr
+            int,  // count
+            long  // out_bitmask_ptr
+        )
+
+        private val add_shape = Rust.void(
+            "add_shape",
+            long, // world_ptr
+            int,  // shape_id
+            int,  // boxes_count
+            long  // boxes_ptr
+        )
     }
 
     val arena = Arena.ofConfined()
@@ -138,5 +166,52 @@ class PhysicsWorld {
     fun removeChunk(x: Int, y: Int, z: Int) {
         chunks.remove(Triple(x, y, z))?.remove()
         remove_chunk.invokeExact(worldPtr, x, y, z)
+    }
+
+    fun setChunkSpecial(
+        chunkX: Int, chunkY: Int, chunkZ: Int,
+        shapeId: Int, materialType: Int, instancesCount: Int, instancesPtr: Long
+    ) {
+        set_chunk_special.invokeExact(
+            worldPtr, chunkX, chunkY, chunkZ, shapeId, materialType, instancesCount, instancesPtr
+        )
+    }
+
+    fun checkShapes(shapeIds: IntArray): ByteArray {
+        if (shapeIds.isEmpty()) return ByteArray(0)
+        
+        val byteCount = (shapeIds.size + 7) / 8
+        val bitmaskArray = ByteArray(byteCount)
+        
+        arena {
+            val idsSegment = allocate(shapeIds.size * 4L)
+            for (i in shapeIds.indices) {
+                idsSegment.setAtIndex(int, i.toLong(), shapeIds[i])
+            }
+            
+            val outSegment = allocate(byteCount.toLong())
+            
+            check_shapes_batch.invokeExact(worldPtr, idsSegment.address(), shapeIds.size, outSegment.address())
+            
+            MemorySegment.copy(outSegment, byte, 0, bitmaskArray, 0, byteCount)
+        }
+        
+        return bitmaskArray
+    }
+
+    fun addShape(shapeId: Int, boxes: FloatArray) {
+        if (boxes.isEmpty() || boxes.size % 6 != 0) return
+        val boxesCount = boxes.size / 6
+
+        arena {
+            val boxesSegment = allocate(boxes.size * 4L)
+            for (i in boxes.indices) {
+                boxesSegment.setAtIndex(float, i.toLong(), boxes[i])
+            }
+            
+            add_shape.invokeExact(worldPtr, shapeId, boxesCount, boxesSegment.address())
+
+            Unit
+        }
     }
 }

@@ -162,6 +162,10 @@ tasks.named("processResources") {
     dependsOn("buildRustDev", "copyRustNatives")
 }
 
+tasks.named("prepareRunServer") {
+    dependsOn("buildRustDev")
+}
+
 tasks.register("buildDev") {
     group = "build"
     description = "Fast development build (compiles local native only)"

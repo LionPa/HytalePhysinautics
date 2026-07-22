@@ -7,6 +7,8 @@ import com.hypixel.hytale.server.core.universe.world.World
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore
 import `fun`.hygames.kotlinutils.codeInitialization.CodeInitializer
 import io.lionpa.physinautics.rust.PhysicsWorld
+import io.lionpa.physinautics.systems.PhysicsChunkUnloadSystem
+import io.lionpa.physinautics.systems.PhysicsEntityUnloadSystem
 import io.lionpa.physinautics.test.CubeExplosionCommand
 import io.lionpa.physinautics.test.TestHardCollisionsCommand
 
@@ -46,6 +48,8 @@ class Physinautics(init: JavaPluginInit): JavaPlugin(init) {
         entityStoreRegistry.registerSystem(PhysicsSystem)
         entityStoreRegistry.registerSystem(BreakPhysicsEntitySystem)
         entityStoreRegistry.registerSystem(PhysicsBlockColliderSystem)
+        entityStoreRegistry.registerSystem(PhysicsEntityUnloadSystem)
+        chunkStoreRegistry.registerSystem(PhysicsChunkUnloadSystem)
 
         commandRegistry.registerCommand(TestHardCollisionsCommand())
         commandRegistry.registerCommand(CubeExplosionCommand())

@@ -1,4 +1,5 @@
 mod level_collider;
+mod shape_registry;
 use std::collections::HashMap;
 
 use rapier3d::prelude::*;
@@ -24,7 +25,8 @@ pub struct PhysicsWorld {
     pub sync_buffer: *mut f32,
     pub max_objects: usize,
 
-    pub chunk_colliders: HashMap<(i32, i32, i32), Option<ColliderHandle>>,
+    pub chunk_colliders: HashMap<(i32, i32, i32), HashMap<u64, ColliderHandle>>,
+    pub shapes: HashMap<u32, Vec<(Pose, SharedShape)>>,
 }
 
 #[unsafe(no_mangle)]
@@ -49,6 +51,7 @@ pub unsafe extern "C" fn rapier_init() -> *mut PhysicsWorld {
         sync_buffer: ptr::null_mut(),
         max_objects: 0,
         chunk_colliders: HashMap::new(),
+        shapes: HashMap::new(),
     });
 
     Box::into_raw(world)
